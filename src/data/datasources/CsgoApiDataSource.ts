@@ -6,7 +6,6 @@ import { Agent } from '@/src/domain/entities/Agent';
 import { Collectible, Rarity } from '@/src/domain/entities/Collectible';
 
 /**
- * --- CORRECCIÓN 404 (Definitiva) ---
  * La baseURL correcta es la del repositorio en raw.githubusercontent.com
  */
 const apiClient = axios.create({
