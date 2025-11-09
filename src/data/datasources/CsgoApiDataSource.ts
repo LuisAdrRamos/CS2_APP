@@ -1,0 +1,105 @@
+// ARCHIVO: src/data/datasources/CsgoApiDataSource.ts
+import axios from 'axios';
+import { Skin } from '@/src/domain/entities/Skin';
+import { Agent } from '@/src/domain/entities/Agent';
+import { Collectible, Rarity } from '@/src/domain/entities/Collectible';
+
+/**
+ * --- CORRECCIÓN 404 (Definitiva) ---
+ * La baseURL correcta es la del repositorio en raw.githubusercontent.com
+ */
+const apiClient = axios.create({
+    baseURL: 'https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/',
+    timeout: 10000,
+});
+
+export class CsgoApiDataSource {
+
+    private mapApiRarityToEntity(apiRarity: any): Rarity | null {
+        if (!apiRarity) return null;
+        return {
+            id: apiRarity.id,
+            name: apiRarity.name,
+            color: apiRarity.color,
+        };
+    }
+
+    /**
+     * Endpoint 1: agents.json
+     */
+    async getAgents(): Promise<Agent[]> {
+        try {
+            const response = await apiClient.get('agents.json');
+            if (Array.isArray(response.data)) {
+                return response.data.map((agent: any): Agent => ({
+                    id: agent.id,
+                    name: agent.name,
+                    description: agent.description || 'Sin descripción.',
+                    rarity: this.mapApiRarityToEntity(agent.rarity),
+                    image: agent.image,
+                }));
+            }
+            throw new Error('La respuesta de /agents no fue un array');
+        } catch (error: any) {
+            console.error('[getAgents Error]', error.message);
+            throw new Error('No se pudieron cargar los Agentes.');
+        }
+    }
+
+    /**
+     * Endpoint 2: crates.json (Cajas)
+     */
+    async getCollectibles(): Promise<Collectible[]> {
+        try {
+            // Llamamos a 'crates.json' (Cajas)
+            const response = await apiClient.get('crates.json');
+            if (Array.isArray(response.data)) {
+                // Lo mapeamos a nuestra entidad 'Collectible'
+                return response.data.map((item: any): Collectible => ({
+                    id: item.id,
+                    name: item.name,
+                    description: item.description || 'Sin descripción.',
+                    rarity: this.mapApiRarityToEntity(item.rarity),
+                    type: item.type,
+                    image: item.image,
+                }));
+            }
+            throw new Error('La respuesta de /crates no fue un array');
+        } catch (error: any) {
+            console.error('[getCollectibles Error]', error.message);
+            throw new Error('No se pudieron cargar las Cajas.');
+        }
+    }
+
+    /**
+     * Endpoint 3: crates/{id}.json (Detalle de Caja)
+     * ESTA ES LA CORRECCIÓN DEL 404
+     */
+    async getCollectibleById(id: string): Promise<Skin[]> {
+        try {
+            // Llamamos a 'crates/{id}.json' (NO 'collectibles')
+            const response = await apiClient.get(`crates/${id}.json`);
+            
+            // Las skins están en el array 'contains'
+            const items = response.data?.contains;
+            
+            if (Array.isArray(items)) {
+                return items.map((item: any): Skin => ({
+                    id: item.id,
+                    name: item.name,
+                    description: item.description || 'Sin descripción.',
+                    rarity: this.mapApiRarityToEntity(item.rarity),
+                    image: item.image,
+                    weapon: item.weapon?.name,
+                    pattern: item.pattern?.name,
+                    min_float: item.min_float,
+                    max_float: item.max_float,
+                }));
+            }
+            throw new Error(`No se encontraron items (contains) para el ID: ${id}`);
+        } catch (error: any) {
+            console.error(`[getCollectibleById Error: ${id}]`, error.message);
+            throw new Error(`No se pudo cargar la caja: ${id}.`);
+        }
+    }
+}
