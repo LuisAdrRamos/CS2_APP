@@ -10,7 +10,7 @@ import { Collectible, Rarity } from '@/src/domain/entities/Collectible';
  * La baseURL correcta es la del repositorio en raw.githubusercontent.com
  */
 const apiClient = axios.create({
-    baseURL: 'https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en/',
+    baseURL: 'https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/es-ES/',
     timeout: 10000,
 });
 
