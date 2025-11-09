@@ -1,4 +1,5 @@
 // ARCHIVO: src/data/repositories/CsgoRepositoryImpl.ts
+// MODIFICADO: Se implementa la nueva interfaz
 import { Agent } from "@/src/domain/entities/Agent";
 import { Collectible } from "@/src/domain/entities/Collectible";
 import { Skin } from "@/src/domain/entities/Skin";
@@ -17,8 +18,11 @@ export class CsgoRepositoryImpl implements CsgoRepository {
         return this.dataSource.getCollectibles();
     }
 
-    // Volvemos a implementar el método de detalle
-    async getCollectibleById(id: string): Promise<Skin[]> {
-        return this.dataSource.getCollectibleById(id);
+    // NUEVO: Implementa el 3er endpoint
+    async getSkins(): Promise<Skin[]> {
+        return this.dataSource.getSkins();
     }
+
+    // ELIMINADO
+    // async getCollectibleById(id: string): Promise<Skin[]> { ... }
 }

@@ -1,38 +1,33 @@
-// ARCHIVO: app/(tabs)/collectibles.tsx
-// MODIFICADO: Se quitó el TouchableOpacity porque ya no hay pantalla de detalle
+// ARCHIVO: app/(tabs)/skins.tsx
+// NUEVO: Esta pantalla consume el 3er endpoint (skins.json)
 import React from 'react';
 import {
     View,
     Text,
     FlatList,
     ActivityIndicator,
-    TouchableOpacity, // Mantenemos TouchableOpacity por si hay error
+    TouchableOpacity,
     RefreshControl,
     Image,
+    ScrollView,
 } from 'react-native';
-// import { useRouter } from 'expo-router'; // Ya no se usa
-import { useCollectibles } from '@/src/presentation/hooks/useCollectibles';
-import { theme, styles } from '@/src/presentation/styles/globalStyles';
-import { Collectible } from '@/src/domain/entities/Collectible';
+import { useSkins } from '../../src/presentation/hooks/useSkins';
+import { theme, styles } from '../../src/presentation/styles/globalStyles';
+import { Skin } from '../../src/domain/entities/Skin';
 
 /**
- * Pantalla que muestra la lista de Cajas (Crates).
- * Consume el Endpoint 2: crates.json
+ * Pantalla que muestra la lista de Skins.
+ * Consume el Endpoint 3: skins.json
  */
-export default function CollectiblesScreen() {
-    const { collectibles, loading, error, refreshCollectibles } = useCollectibles();
-    // const router = useRouter(); // Ya no se usa
+export default function SkinsScreen() {
+    const { skins, loading, error, refreshSkins } = useSkins();
 
-    // --- ELIMINADA LA NAVEGACIÓN ---
-    // La pantalla de detalle [id].tsx fue eliminada porque el endpoint no existe.
-
-    const renderItem = ({ item }: { item: Collectible }) => (
-        // --- CAMBIADO A "View" ---
+    const renderItem = ({ item }: { item: Skin }) => (
         <View style={styles.card}>
             <Image
                 source={{ uri: item.image }}
                 style={styles.cardImage}
-                resizeMode="contain" 
+                resizeMode="contain"
             />
             <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{item.name}</Text>
@@ -46,16 +41,19 @@ export default function CollectiblesScreen() {
                         {item.rarity.name}
                     </Text>
                 )}
+                {/* Mostramos el nombre del arma (si existe) */}
+                {item.weapon && (
+                    <Text style={styles.cardSubtitle}>{item.weapon}</Text>
+                )}
             </View>
         </View>
-        // --- FIN ---
     );
 
-    if (loading && collectibles.length === 0) {
+    if (loading && skins.length === 0) {
         return (
             <View style={styles.centerContainer}>
                 <ActivityIndicator size="large" color={theme.primary} />
-                <Text style={styles.loadingText}>Cargando Cajas...</Text>
+                <Text style={styles.loadingText}>Cargando Skins...</Text>
             </View>
         );
     }
@@ -64,7 +62,7 @@ export default function CollectiblesScreen() {
         return (
             <View style={styles.centerContainer}>
                 <Text style={styles.errorText}>{error}</Text>
-                <TouchableOpacity onPress={refreshCollectibles}>
+                <TouchableOpacity onPress={refreshSkins}>
                     <Text style={{ color: theme.primary, marginTop: 10 }}>
                         Reintentar
                     </Text>
@@ -75,16 +73,15 @@ export default function CollectiblesScreen() {
 
     return (
         <View style={styles.container}>
-            {/* <Text style={styles.title}>Cajas de CS2</Text> */}
             <FlatList
-                data={collectibles}
+                data={skins}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.listContent}
                 refreshControl={
                     <RefreshControl
                         refreshing={loading}
-                        onRefresh={refreshCollectibles}
+                        onRefresh={refreshSkins}
                         tintColor={theme.primary}
                         colors={[theme.primary]}
                     />

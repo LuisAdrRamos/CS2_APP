@@ -1,4 +1,5 @@
 // ARCHIVO: src/di/container.ts
+// MODIFICADO: Se registra el nuevo caso de uso GetSkins
 
 // --- Importaciones de Autenticación ---
 import { FirebaseAuthDataSource } from '../data/datasources/FirebaseAuthDataSource';
@@ -17,8 +18,8 @@ import { CsgoRepositoryImpl } from '../data/repositories/CsgoRepositoryImpl';
 import { CsgoRepository } from '../domain/repositories/CsgoRepository';
 import { GetAgents } from '../domain/usecases/GetAgents';
 import { GetCollectibles } from '../domain/usecases/GetCollectibles';
-// Volvemos a importar el caso de uso de detalle
-import { GetCollectibleById } from '../domain/usecases/GetCollectibleById';
+// NUEVO
+import { GetSkins } from '../domain/usecases/GetSkins';
 
 
 class DIContainer {
@@ -39,7 +40,7 @@ class DIContainer {
     private _csgoRepository?: CsgoRepository;
     private _getAgents?: GetAgents;
     private _getCollectibles?: GetCollectibles;
-    private _getCollectibleById?: GetCollectibleById; // Corregido
+    private _getSkins?: GetSkins; // <-- NUEVO
 
     private constructor() { }
 
@@ -101,11 +102,16 @@ class DIContainer {
         if (!this._getCollectibles) { this._getCollectibles = new GetCollectibles(this.csgoRepository); }
         return this._getCollectibles;
     }
-    get getCollectibleById(): GetCollectibleById {
-        if (!this._getCollectibleById) {
-            this._getCollectibleById = new GetCollectibleById(this.csgoRepository);
+    
+    // NUEVO
+    get getSkins(): GetSkins {
+        if (!this._getSkins) {
+            this._getSkins = new GetSkins(this.csgoRepository);
         }
-        return this._getCollectibleById;
+        return this._getSkins;
     }
+
+    // ELIMINADO
+    // get getCollectibleById(): GetCollectibleById { ... }
 }
 export const container = DIContainer.getInstance();

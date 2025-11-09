@@ -1,4 +1,5 @@
 // ARCHIVO: src/data/datasources/CsgoApiDataSource.ts
+// MODIFICADO: Se quitó la función del 404 y se añadió getSkins()
 import axios from 'axios';
 import { Skin } from '@/src/domain/entities/Skin';
 import { Agent } from '@/src/domain/entities/Agent';
@@ -72,19 +73,13 @@ export class CsgoApiDataSource {
     }
 
     /**
-     * Endpoint 3: crates/{id}.json (Detalle de Caja)
-     * ESTA ES LA CORRECCIÓN DEL 404
+     * Endpoint 3: skins.json (NUEVO)
      */
-    async getCollectibleById(id: string): Promise<Skin[]> {
+    async getSkins(): Promise<Skin[]> {
         try {
-            // Llamamos a 'crates/{id}.json' (NO 'collectibles')
-            const response = await apiClient.get(`crates/${id}.json`);
-            
-            // Las skins están en el array 'contains'
-            const items = response.data?.contains;
-            
-            if (Array.isArray(items)) {
-                return items.map((item: any): Skin => ({
+            const response = await apiClient.get('skins.json');
+            if (Array.isArray(response.data)) {
+                return response.data.map((item: any): Skin => ({
                     id: item.id,
                     name: item.name,
                     description: item.description || 'Sin descripción.',
@@ -96,10 +91,10 @@ export class CsgoApiDataSource {
                     max_float: item.max_float,
                 }));
             }
-            throw new Error(`No se encontraron items (contains) para el ID: ${id}`);
+            throw new Error('La respuesta de /skins no fue un array');
         } catch (error: any) {
-            console.error(`[getCollectibleById Error: ${id}]`, error.message);
-            throw new Error(`No se pudo cargar la caja: ${id}.`);
+            console.error('[getSkins Error]', error.message);
+            throw new Error('No se pudieron cargar las Skins.');
         }
     }
 }

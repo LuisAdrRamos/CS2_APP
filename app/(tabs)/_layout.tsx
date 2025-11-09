@@ -1,8 +1,10 @@
 // ARCHIVO: app/(tabs)/_layout.tsx
+// MODIFICADO: Añadí la pestaña "Skins" y cambié el ícono de "Cajas"
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '@/src/presentation/styles/globalStyles';
+// CORREGIDO: Se cambió el alias '@/' por la ruta relativa correcta
+import { theme } from '../../src/presentation/styles/globalStyles';
 
 export default function TabLayout() {
     return (
@@ -20,13 +22,14 @@ export default function TabLayout() {
                 headerTintColor: theme.text,
             }}
         >
-            {/* Pestaña 1: "Cajas" (Usa el archivo collectibles.tsx) */}
+
+            {/* PESTAÑA 1: Skins (Endpoint 3) */}
             <Tabs.Screen
-                name="collectibles" // Archivo: collectibles.tsx
+                name="skins" // Archivo: skins.tsx
                 options={{
-                    title: 'Cajas', // Mostramos "Cajas"
+                    title: 'Skins',
                     tabBarIcon: ({ color }) => (
-                        <Ionicons name="cube-outline" size={28} color={color} />
+                        <Ionicons name="color-palette-outline" size={28} color={color} />
                     ),
                 }}
             />
@@ -42,7 +45,18 @@ export default function TabLayout() {
                 }}
             />
 
-            {/* Pestaña 3: Perfil */}
+            {/* Pestaña 3: "Cajas" (Usa el archivo collectibles.tsx) */}
+            <Tabs.Screen
+                name="collectibles" // Archivo: collectibles.tsx
+                options={{
+                    title: 'Cajas', // Mostramos "Cajas"
+                    tabBarIcon: ({ color }) => (
+                        <Ionicons name="archive-outline" size={28} color={color} /> // Icono cambiado
+                    ),
+                }}
+            />
+
+            {/* Pestaña 4: Perfil */}
             <Tabs.Screen
                 name="profile" // Archivo: profile.tsx
                 options={{

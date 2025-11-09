@@ -1,4 +1,5 @@
 // ARCHIVO: app/_layout.tsx
+// MODIFICADO: Se eliminó la pantalla de detalle que daba 404
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -46,16 +47,6 @@ export default function RootLayout() {
             {/* Registramos el layout de Pestañas */}
             <Stack.Screen name="(tabs)" />
 
-            {/* Arregla el error ENOENT: Registramos la pantalla de detalle */}
-            <Stack.Screen
-                name="collectibles/[id]"
-                options={{
-                    headerShown: true, // Mostramos el header en la pantalla de detalle
-                    headerStyle: { backgroundColor: theme.card },
-                    headerTintColor: theme.text,
-                    title: 'Detalle de Caja' // Título genérico
-                }}
-            />
         </Stack>
     );
 }
